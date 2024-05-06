@@ -1,35 +1,24 @@
+import { useState, useEffect } from "react";
 import "./App.css";
-import Button from "./Button";
-import { useEffect, useState } from "react";
 
 function App() {
-  const [counter, setCounter] = useState(0);
-  const [keyword, setKeyword] = useState("");
-
-  const onClick = () => {
-    setCounter((prev) => prev + 1);
+  const [loading, setLoading] = useState(true);
+  const [movies, setMovies] = useState([]);
+  const getMovies = async () => {
+    const json = await (
+      await fetch(
+        `https://yts.mx/api/v2/list_movies.json?minimum_rating=8.8&sort_by=year`
+      )
+    ).json();
+    setMovies(json.data.movies);
+    setLoading(false);
   };
-
-  const onChange = (e) => {
-    setKeyword(e.target.value);
-  };
-
   useEffect(() => {
-    console.log("search", keyword);
-  }, [keyword]);
+    getMovies();
+  }, []);
+  console.log(movies)
 
-  useEffect(() => {
-    console.log("count");
-  }, [counter]);
-
-  return (
-    <>
-      <input value={keyword} onChange={onChange} placeholder="search here" />
-      <div>{counter}</div>
-      <button onClick={onClick}>Click me</button>
-      <Button text="Hi" />
-    </>
-  );
+  return <>{loading ? <h1>Loading...</h1> : null}</>;
 }
 
 export default App;
